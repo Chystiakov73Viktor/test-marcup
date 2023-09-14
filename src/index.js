@@ -20,7 +20,7 @@ function onFopmSubmit(evt) {
   currentPage = 1;
   cardContainerEl.innerHTML = '';
   loadMore.style.display = 'none';
-  loadMore.hidden = true;
+//   loadMore.hidden = true;
 
   fetchCardURL(searchQuery, currentPage, perPage)
     .then(data => {
