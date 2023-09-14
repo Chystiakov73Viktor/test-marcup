@@ -2,6 +2,7 @@ export const cardMarkupImg = function (data) {
     return data
       .map(el => {
         return `
+        <a class="img" href="${el.largeImageURL}">
           <div class="photo-card">
             <img src="${el.webformatURL}" alt="${el.tags}" loading="lazy" width="300" height="250" />
             <div class="info">
@@ -19,6 +20,7 @@ export const cardMarkupImg = function (data) {
               </p>
             </div>
           </div>
+        </a>  
                   `;
       })
       .join('');

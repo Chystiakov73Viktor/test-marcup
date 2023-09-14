@@ -1,9 +1,13 @@
 import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 import { fetchCardURL } from './js/cat-api';
 import { cardMarkupImg } from './js/markup';
 import { refs } from './js/refs';
 
 const { formEl, cardContainerEl, loadMore } = refs;
+
+var lightbox = new SimpleLightbox('.img');
 
 let searchQuery = '';
 let currentPage = 1;
@@ -20,11 +24,12 @@ function onFopmSubmit(evt) {
   currentPage = 1;
   cardContainerEl.innerHTML = '';
   loadMore.style.display = 'none';
-//   loadMore.hidden = true;
+  loadMore.hidden = true;
 
   fetchCardURL(searchQuery, currentPage, perPage)
     .then(data => {
       const { hits, totalHits } = data;
+      
       if (!totalHits || !searchQuery) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
@@ -32,17 +37,16 @@ function onFopmSubmit(evt) {
         loadMore.hidden = true;
         return;
       }
-
       cardContainerEl.insertAdjacentHTML('beforeend', cardMarkupImg(hits));
+      lightbox.refresh();
       // Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
       if (currentPage !== totalHits) {
         loadMore.style.display = 'block';
         loadMore.hidden = false;
       }
     })
-    .catch(error => {
-      Notiflix.Notify.failure('Sorry! Something went wrong!');
-    });
+    .catch(error => Notiflix.Notify.failure('Sorry! Something went wrong!')
+    );
 }
 
 function onLoadMore() {
@@ -52,6 +56,7 @@ function onLoadMore() {
     .then(data => {
       const { hits, totalHits } = data;
       cardContainerEl.insertAdjacentHTML('beforeend', cardMarkupImg(hits));
+      lightbox.refresh();
       const totalPages = Math.ceil(totalHits / perPage);
 
       if (totalPages === currentPage) {
@@ -68,7 +73,6 @@ function onLoadMore() {
         );
       }
     })
-    .catch(error => {
-      Notiflix.Notify.failure('Sorry! Something went wrong!');
-    });
+    .catch(error => Notiflix.Notify.failure('Sorry! Something went wrong!')
+    );
 }

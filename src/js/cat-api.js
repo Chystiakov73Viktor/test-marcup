@@ -18,6 +18,7 @@ export const fetchCardURL = async (query, page, perPage) => {
       },
     });
     const todoItems = response.data;
+    // console.log(todoItems)
     return todoItems;
   } catch (errors) {
     Notiflix.Notify.failure(
