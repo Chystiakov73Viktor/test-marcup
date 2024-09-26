@@ -1,78 +1,58 @@
-import Notiflix from 'notiflix';
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
-import { fetchCardURL } from './js/cat-api';
-import { cardMarkupImg } from './js/markup';
-import { refs } from './js/refs';
+import {
+  getrefs,
+  handleFetchButtonClick,
+  handleModalAction,
+  handlePaginationClick,
+  renderCards,
+} from './helpers';
+import { fetchData, clearResults, BASE_URL } from './helpers';
 
-const { formEl, cardContainerEl, loadMore } = refs;
+const refs = getrefs();
+const pageCache = {};
+let currentPageQuery = '';
+const fetchButton = document.getElementById('fetchButton');
+const errorMessage = document.getElementById('error-message');
 
-var lightbox = new SimpleLightbox('.img');
+const currentPageRef = { currentPage: 1 };
+const queryRef = { query: '' };
 
-let searchQuery = '';
-let currentPage = 1;
-let perPage = 40;
+async function fetchIngredients() {
+  const url = `${BASE_URL}ingredients/search/`;
+  const params = { f: queryRef.query, page: currentPageRef.currentPage };
 
-loadMore.hidden = true;
+  clearResults(refs.cardContainerEl);
 
-formEl.addEventListener('submit', onFopmSubmit);
-loadMore.addEventListener('click', onLoadMore);
-
-function onFopmSubmit(evt) {
-  evt.preventDefault();
-  searchQuery = evt.currentTarget.elements.searchQuery.value.trim();
-  currentPage = 1;
-  cardContainerEl.innerHTML = '';
-  loadMore.style.display = 'none';
-  loadMore.hidden = true;
-
-  fetchCardURL(searchQuery, currentPage, perPage)
-    .then(data => {
-      const { hits, totalHits } = data;
-      
-      if (!totalHits || !searchQuery) {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        loadMore.hidden = true;
-        return;
-      }
-      cardContainerEl.insertAdjacentHTML('beforeend', cardMarkupImg(hits));
-      lightbox.refresh();
-      // Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-      if (currentPage !== totalHits) {
-        loadMore.style.display = 'block';
-        loadMore.hidden = false;
-      }
-    })
-    .catch(error => Notiflix.Notify.failure('Sorry! Something went wrong!')
-    );
+  await fetchData(
+    url,
+    params,
+    pageCache,
+    currentPageRef.currentPage,
+    currentPageQuery,
+    queryRef.query,
+    refs,
+    renderCards,
+    refs.cardContainerEl
+  );
 }
 
-function onLoadMore() {
-  currentPage += 1;
+fetchIngredients();
 
-  fetchCardURL(searchQuery, currentPage, perPage)
-    .then(data => {
-      const { hits, totalHits } = data;
-      cardContainerEl.insertAdjacentHTML('beforeend', cardMarkupImg(hits));
-      lightbox.refresh();
-      const totalPages = Math.ceil(totalHits / perPage);
+const containerPagination = document.getElementById('pagination-elements');
 
-      if (totalPages === currentPage) {
-        loadMore.style.display = 'none';
-        loadMore.hidden = true;
-        Notiflix.Notify.failure(
-          "We're sorry, but you've reached the end of search results.",
-          {
-            position: 'center-center',
-            timeout: 4000,
-            width: '400px',
-            fontSize: '18px',
-          }
-        );
-      }
-    })
-    .catch(error => Notiflix.Notify.failure('Sorry! Something went wrong!')
-    );
-}
+containerPagination.addEventListener('click', e =>
+  handlePaginationClick(e, fetchIngredients, currentPageRef)
+);
+
+fetchButton.addEventListener(
+  'click',
+  async () =>
+    await handleFetchButtonClick(
+      fetchIngredients,
+      queryRef,
+      currentPageRef,
+      errorMessage, 
+      'ingredients'
+    )
+);
+
+refs.cardContainerEl.addEventListener('click', handleModalAction);

@@ -9,16 +9,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/goitacademy/parcel-project-template.git"
+    "url": "git+https://github.com/Chystiakov73Viktor/test-marcup.git"
   },
-  "keywords": [],
-  "author": "Alexander Repeta <alexander.repeta@gmail.com>",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/goitacademy/parcel-project-template/issues"
-  },
   "dependencies": {
     "axios": "^1.5.0",
+    "basiclightbox": "^5.0.4",
+    "bootstrap": "^5.3.2",
+    "bootstrap-icons": "^1.11.1",
+    "infinite-scroll": "^4.0.1",
+    "lodash.throttle": "^4.1.1",
     "modern-normalize": "^1.1.0",
     "notiflix": "^3.2.6",
     "simplelightbox": "^2.14.2"
