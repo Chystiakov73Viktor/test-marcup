@@ -1,5 +1,5 @@
 import * as basicLightbox from 'basiclightbox';
-import 'basiclightbox/dist/basiclightbox.min.css';
+// import 'basiclightbox/dist/basiclightbox.min.css';
 import { createModalContent } from './modalContentMarkup';
 import { addToFavorites } from './addToFavorites';
 import { removeFromFavorite } from './removeFromFavorite';
